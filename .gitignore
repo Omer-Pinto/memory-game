@@ -1,0 +1,34 @@
+# Dependencies
+node_modules/
+
+# Next.js build
+.next/
+out/
+
+# TypeScript
+tsconfig.tsbuildinfo
+
+# Auto-generated
+next-env.d.ts
+
+# Sound binaries (regenerate with: node scripts/generate-sounds.cjs)
+public/sounds/*.wav
+public/sounds/*.mp3
+
+# IDE / Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# Claude Code local settings
+.claude/settings.local.json
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Debug logs
+npm-debug.log*
