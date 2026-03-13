@@ -1,6 +1,8 @@
 "use client";
 
+import { useEffect } from "react";
 import { Player } from "../game/types";
+import { playVictorySound } from "../game/soundEngine";
 import Confetti from "./Confetti";
 import styles from "./GameOverScreen.module.css";
 
@@ -10,6 +12,10 @@ interface GameOverScreenProps {
 }
 
 export default function GameOverScreen({ players, onPlayAgain }: GameOverScreenProps) {
+  useEffect(() => {
+    playVictorySound();
+  }, []);
+
   const sorted = [...players].sort((a, b) => b.pairs - a.pairs);
   const isTie = sorted[0].pairs === sorted[1].pairs;
   const winner = isTie ? null : sorted[0];

@@ -7,6 +7,8 @@ import { themes } from "../themes";
 import {
   playMatchSound,
   playMismatchSound,
+  playComboSound,
+  playVictorySound,
 } from "../game/soundEngine";
 import Card from "./Card";
 import ScoreBoard from "./ScoreBoard";
@@ -127,7 +129,11 @@ export default function GameBoard({ setup, onPlayAgain }: GameBoardProps) {
             setStreak(newStreak);
             setTotalStars((s) => s + 1);
 
-            playMatchSound();
+            if (newStreak >= 2) {
+              playComboSound();
+            } else {
+              playMatchSound();
+            }
 
             if (newStreak >= 2) {
               const comboIdx = Math.min(newStreak, COMBO_MESSAGES.length - 1);

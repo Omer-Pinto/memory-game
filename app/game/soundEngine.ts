@@ -1,32 +1,36 @@
-// Sound engine — match/mismatch feedback only
+// Sound engine — MP3-based game sounds
 
-function playTone(frequency: number, duration: number, type: OscillatorType = "sine", volume: number = 0.3) {
+const audioCache: Record<string, HTMLAudioElement> = {};
+
+function getAudio(src: string): HTMLAudioElement {
+  if (!audioCache[src]) {
+    audioCache[src] = new Audio(src);
+  }
+  return audioCache[src];
+}
+
+function playSound(src: string, volume: number = 0.5) {
   if (typeof window === "undefined") return;
   try {
-    const ctx = new AudioContext();
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.type = type;
-    osc.frequency.setValueAtTime(frequency, ctx.currentTime);
-    gain.gain.setValueAtTime(volume, ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-    osc.start();
-    osc.stop(ctx.currentTime + duration);
-    setTimeout(() => ctx.close(), (duration + 0.1) * 1000);
+    const audio = getAudio(src);
+    audio.currentTime = 0;
+    audio.volume = volume;
+    audio.play().catch(() => {});
   } catch {}
 }
 
 export function playMatchSound() {
-  // Happy ascending chime
-  playTone(523, 0.15, "sine", 0.25);
-  setTimeout(() => playTone(659, 0.15, "sine", 0.25), 100);
-  setTimeout(() => playTone(784, 0.3, "sine", 0.3), 200);
+  playSound("/assets/sounds/success.mp3", 0.6);
 }
 
 export function playMismatchSound() {
-  // Gentle descending tone
-  playTone(350, 0.2, "sine", 0.2);
-  setTimeout(() => playTone(280, 0.3, "sine", 0.2), 150);
+  playSound("/assets/sounds/failure.mp3", 0.5);
+}
+
+export function playComboSound() {
+  playSound("/assets/sounds/combo.mp3", 0.7);
+}
+
+export function playVictorySound() {
+  playSound("/assets/sounds/victory.mp3", 0.6);
 }
