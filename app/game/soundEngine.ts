@@ -23,8 +23,17 @@ export function playMatchSound() {
   playSound("/assets/sounds/success.mp3", 0.6);
 }
 
+const FAILURE_SOUNDS = [
+  "/assets/sounds/failure_1.mp3",
+  "/assets/sounds/failure_2.mp3",
+  "/assets/sounds/failure_3.mp3",
+  "/assets/sounds/failure_4.mp3",
+];
+let failureIndex = 0;
+
 export function playMismatchSound() {
-  playSound("/assets/sounds/failure.mp3", 0.5);
+  playSound(FAILURE_SOUNDS[failureIndex % FAILURE_SOUNDS.length], 0.5);
+  failureIndex++;
 }
 
 export function playComboSound() {
