@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { Player } from "../game/types";
-import { playVictorySound, speakLabel } from "../game/soundEngine";
+import { playVictorySound } from "../game/soundEngine";
 import Confetti from "./Confetti";
 import styles from "./GameOverScreen.module.css";
 
@@ -12,20 +12,13 @@ interface GameOverScreenProps {
 }
 
 export default function GameOverScreen({ players, onPlayAgain }: GameOverScreenProps) {
+  useEffect(() => {
+    playVictorySound();
+  }, []);
+
   const sorted = [...players].sort((a, b) => b.pairs - a.pairs);
   const isTie = sorted[0].pairs === sorted[1].pairs;
   const winner = isTie ? null : sorted[0];
-
-  useEffect(() => {
-    playVictorySound();
-    setTimeout(() => {
-      if (isTie) {
-        speakLabel("\u05EA\u05D9\u05E7\u05D5! \u05DE\u05E9\u05D7\u05E7 \u05DE\u05E2\u05D5\u05DC\u05D4 \u05DC\u05DB\u05D5\u05DC\u05DD!");
-      } else {
-        speakLabel(`${winner!.name} \u05E0\u05D9\u05E6\u05D7! \u05DE\u05D6\u05DC \u05D8\u05D5\u05D1!`);
-      }
-    }, 2000);
-  }, [isTie, winner]);
 
   return (
     <div className={styles.overlay}>

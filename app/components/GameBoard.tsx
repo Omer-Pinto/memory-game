@@ -5,18 +5,11 @@ import { GameSetup, GameState, DIFFICULTY_CONFIG } from "../game/types";
 import { checkMatch, createCards, createInitialState, flipCard } from "../game/gameEngine";
 import { themes } from "../themes";
 import {
-  playCardSound,
-  playComboSound,
-  playFlipSound,
   playMatchSound,
   playMismatchSound,
-  preloadSounds,
-  speakEncouragement,
-  speakTurn,
-  startBackgroundMusic,
-  stopBackgroundMusic,
-  vibrateMatch,
-  vibrateMismatch,
+  playComboSound,
+  playVictorySound,
+  playFlipSound,
 } from "../game/soundEngine";
 import Card from "./Card";
 import ScoreBoard from "./ScoreBoard";
@@ -63,8 +56,7 @@ const COMBO_MESSAGES = [
   "\u05D1\u05DC\u05EA\u05D9 \u05E0\u05D9\u05EA\u05DF \u05DC\u05E2\u05E6\u05D9\u05E8\u05D4!",
 ];
 
-// Reduced from 3200ms to 2200ms as requested
-const MISMATCH_VIEWING_TIME = 2200;
+const MISMATCH_VIEWING_TIME = 1000;
 const TURN_ANNOUNCEMENT_TIME = 3000;
 const MATCH_ANIMATION_TIME = 1200;
 const MATCH_COOLDOWN_TIME = 1500;
@@ -96,6 +88,7 @@ export default function GameBoard({ setup, onPlayAgain }: GameBoardProps) {
   const [milestoneMessage, setMilestoneMessage] = useState<string | null>(null);
   const [cardsEntered, setCardsEntered] = useState(false);
   const [screenFlash, setScreenFlash] = useState(false);
+  const [revealAll, setRevealAll] = useState(false);
   const prevPlayerRef = useRef(gameState.currentPlayerIndex);
   const halfwayShownRef = useRef(false);
   const totalPairs = config.pairsNeeded;
@@ -104,20 +97,16 @@ export default function GameBoard({ setup, onPlayAgain }: GameBoardProps) {
   useEffect(() => {
     const timers: ReturnType<typeof setTimeout>[] = [];
     timers.push(setTimeout(() => setCardsEntered(true), 100));
-    preloadSounds();
-    startBackgroundMusic();
 
     // Announce first player's turn after cards enter
     timers.push(setTimeout(() => {
       const firstName = setup.player1Name.trim() || "\u05E9\u05D7\u05E7\u05DF 1";
       setTurnAnnouncement(`${firstName}, \u05D4\u05EA\u05D5\u05E8 \u05E9\u05DC\u05DA!`);
-      speakTurn(firstName);
       setTimeout(() => setTurnAnnouncement(null), TURN_ANNOUNCEMENT_TIME);
     }, 800));
 
     return () => {
       timers.forEach(clearTimeout);
-      stopBackgroundMusic();
     };
   }, [setup.difficulty, setup.player1Name]);
 
@@ -125,7 +114,6 @@ export default function GameBoard({ setup, onPlayAgain }: GameBoardProps) {
     if (prevPlayerRef.current !== gameState.currentPlayerIndex) {
       const name = gameState.players[gameState.currentPlayerIndex].name;
       setTurnAnnouncement(`${name}, \u05D4\u05EA\u05D5\u05E8 \u05E9\u05DC\u05DA!`);
-      speakTurn(name);
       const timer = setTimeout(() => setTurnAnnouncement(null), TURN_ANNOUNCEMENT_TIME);
       prevPlayerRef.current = gameState.currentPlayerIndex;
       return () => clearTimeout(timer);
@@ -143,13 +131,17 @@ export default function GameBoard({ setup, onPlayAgain }: GameBoardProps) {
             setTotalStars((s) => s + 1);
 
             if (newStreak >= 2) {
-              playComboSound(newStreak);
+              playComboSound();
+            } else {
+              playMatchSound();
+            }
+
+            if (newStreak >= 2) {
               const comboIdx = Math.min(newStreak, COMBO_MESSAGES.length - 1);
               setComboMessage(COMBO_MESSAGES[comboIdx]);
               setConfettiCount(40 + newStreak * 20);
               setTimeout(() => setComboMessage(null), 2000);
             } else {
-              playMatchSound();
               setConfettiCount(40);
             }
 
@@ -171,14 +163,12 @@ export default function GameBoard({ setup, onPlayAgain }: GameBoardProps) {
             setMatchCooldown(true);
             const msg = ENCOURAGEMENTS[Math.floor(Math.random() * ENCOURAGEMENTS.length)];
             setEncouragement(msg);
-            speakEncouragement(msg);
-            vibrateMatch();
             setTimeout(() => setShowConfetti(false), 2500);
             setTimeout(() => setEncouragement(null), 2000);
             setTimeout(() => setMatchCooldown(false), MATCH_COOLDOWN_TIME);
           } else {
             playMismatchSound();
-            vibrateMismatch();
+            playFlipSound();
             setStreak(0);
             const msg = MISMATCH_ENCOURAGEMENTS[Math.floor(Math.random() * MISMATCH_ENCOURAGEMENTS.length)];
             setEncouragement(msg);
@@ -202,22 +192,17 @@ export default function GameBoard({ setup, onPlayAgain }: GameBoardProps) {
 
   const handleCardClick = useCallback(
     (cardId: number) => {
-      if (gameState.isChecking || gameState.isGameOver || matchCooldown) return;
+      if (gameState.isChecking || gameState.isGameOver) return;
       const card = gameState.cards.find((c) => c.id === cardId);
       if (!card || card.isFlipped || card.isMatched) return;
 
       playFlipSound();
-      setTimeout(() => {
-        playCardSound(card.themeItemId, card.label);
-      }, 200);
-
       setGameState((prev) => flipCard(prev, cardId));
     },
-    [gameState.isChecking, gameState.isGameOver, gameState.cards, matchCooldown]
+    [gameState.isChecking, gameState.isGameOver, gameState.cards]
   );
 
   if (gameState.isGameOver) {
-    stopBackgroundMusic();
     return (
       <GameOverScreen
         players={gameState.players}
@@ -281,11 +266,19 @@ export default function GameBoard({ setup, onPlayAgain }: GameBoardProps) {
             ))}
           </div>
         )}
+        <button
+          className={`${styles.revealButton} ${revealAll ? styles.revealButtonActive : ""}`}
+          onClick={() => { playFlipSound(); setRevealAll((v) => !v); }}
+          title={revealAll ? "\u05D4\u05E1\u05EA\u05E8 \u05D4\u05DB\u05DC" : "\u05D2\u05DC\u05D4 \u05D4\u05DB\u05DC"}
+        >
+          {revealAll ? "\uD83D\uDE48 \u05D4\u05E1\u05EA\u05E8" : "\uD83D\uDC41\uFE0F \u05D2\u05DC\u05D4 \u05D4\u05DB\u05DC"}
+        </button>
       </div>
 
       <PlayerTurnIndicator
         players={gameState.players}
         currentPlayerIndex={gameState.currentPlayerIndex}
+        icons={[setup.player1Icon, setup.player2Icon]}
       />
 
       <ScoreBoard players={gameState.players} totalPairs={totalPairs} />
@@ -304,9 +297,10 @@ export default function GameBoard({ setup, onPlayAgain }: GameBoardProps) {
             key={card.id}
             card={card}
             onClick={handleCardClick}
-            disabled={gameState.isChecking || matchCooldown}
+            disabled={gameState.isChecking}
             isMatchAnimating={gameState.matchAnimation?.includes(card.id) ?? false}
             entranceDelay={cardsEntered ? index * 30 : -1}
+            forceFlip={revealAll}
           />
         ))}
       </div>

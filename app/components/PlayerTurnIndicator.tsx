@@ -1,20 +1,20 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Player } from "../game/types";
+import Image from "next/image";
+import { Player, PLAYER_ICONS } from "../game/types";
 import styles from "./PlayerTurnIndicator.module.css";
 
 interface PlayerTurnIndicatorProps {
   players: [Player, Player];
   currentPlayerIndex: 0 | 1;
+  icons: [string, string];
 }
 
 const PLAYER_COLORS = [
   { bg: "linear-gradient(135deg, #FF6B6B, #FF8E53)", glow: "rgba(255, 107, 107, 0.5)" },
   { bg: "linear-gradient(135deg, #4D96FF, #6BCB77)", glow: "rgba(77, 150, 255, 0.5)" },
 ];
-
-const AVATARS = ["&#129409;", "&#129412;"];
 
 function AnimatedScore({ value, playerBg }: { value: number; playerBg: string }) {
   const [isBouncing, setIsBouncing] = useState(false);
@@ -39,7 +39,7 @@ function AnimatedScore({ value, playerBg }: { value: number; playerBg: string })
   );
 }
 
-export default function PlayerTurnIndicator({ players, currentPlayerIndex }: PlayerTurnIndicatorProps) {
+export default function PlayerTurnIndicator({ players, currentPlayerIndex, icons }: PlayerTurnIndicatorProps) {
   return (
     <div className={styles.indicator}>
       {players.map((player, i) => {
@@ -55,10 +55,15 @@ export default function PlayerTurnIndicator({ players, currentPlayerIndex }: Pla
             }}
           >
             <div className={styles.avatarWrap}>
-              <span
-                className={styles.avatar}
-                dangerouslySetInnerHTML={{ __html: AVATARS[i] }}
-              />
+              <span className={styles.avatar}>
+                {(() => {
+                  const iconData = PLAYER_ICONS.find(ic => ic.emoji === icons[i]);
+                  if (iconData?.image) {
+                    return <Image src={iconData.image} alt={iconData.label} width={36} height={36} style={{ objectFit: "contain", borderRadius: "50%" }} />;
+                  }
+                  return icons[i];
+                })()}
+              </span>
               {isActive && <div className={styles.activeRing} />}
             </div>
             <div className={styles.info}>

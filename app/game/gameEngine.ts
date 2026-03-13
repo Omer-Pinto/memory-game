@@ -14,28 +14,24 @@ export function createCards(theme: Theme, difficulty: Difficulty): CardData[] {
   const config = DIFFICULTY_CONFIG[difficulty];
   const pairsNeeded = config.pairsNeeded;
 
-  const selectedItems = shuffle(theme.items).slice(0, pairsNeeded);
+  const selectedItems = theme.items.slice(0, pairsNeeded);
 
   const cards: CardData[] = [];
   let id = 0;
 
   for (const item of selectedItems) {
-    cards.push({
-      id: id++,
+    const base = {
       themeItemId: item.id,
       label: item.label,
       emoji: item.emoji,
+      ...(item.color ? { color: item.color } : {}),
+      ...(item.shape ? { shape: item.shape } : {}),
+      ...(item.image ? { image: item.image } : {}),
       isFlipped: false,
       isMatched: false,
-    });
-    cards.push({
-      id: id++,
-      themeItemId: item.id,
-      label: item.label,
-      emoji: item.emoji,
-      isFlipped: false,
-      isMatched: false,
-    });
+    };
+    cards.push({ ...base, id: id++ });
+    cards.push({ ...base, id: id++ });
   }
 
   return shuffle(cards);

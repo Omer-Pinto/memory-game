@@ -5,10 +5,10 @@ A colorful, interactive memory card game for kids (ages 3-7), built with Next.js
 ## Features
 
 - **Two-player mode** with turn-based gameplay
-- **7 themes**: Animals, Colors, Numbers, Characters, Appliances, English Letters, Hebrew Letters
+- **4 themes**: Animals, Colors, Characters, Smurfs (with real character images)
 - **3 difficulty levels**: Easy (4x4), Medium (6x6), Hard (8x8)
 - **Card peek** countdown before play begins
-- **3D flip animations**, confetti, combo streaks, and sound effects
+- **3D flip animations**, confetti, combo streaks, and MP3 sound effects
 - **Voice announcements** via Web Speech API (Hebrew)
 
 ## Screenshots

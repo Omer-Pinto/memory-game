@@ -1,6 +1,7 @@
 "use client";
 
 import { CardData } from "../game/types";
+import ColorShape from "./ColorShape";
 import styles from "./Card.module.css";
 
 interface CardProps {
@@ -9,16 +10,17 @@ interface CardProps {
   disabled: boolean;
   isMatchAnimating: boolean;
   entranceDelay?: number;
+  forceFlip?: boolean;
 }
 
-export default function Card({ card, onClick, disabled, isMatchAnimating, entranceDelay = -1 }: CardProps) {
+export default function Card({ card, onClick, disabled, isMatchAnimating, entranceDelay = -1, forceFlip = false }: CardProps) {
   const handleClick = () => {
-    if (!disabled && !card.isFlipped && !card.isMatched) {
+    if (!disabled && !card.isFlipped && !card.isMatched && !forceFlip) {
       onClick(card.id);
     }
   };
 
-  const isOpen = card.isFlipped || card.isMatched;
+  const isOpen = card.isFlipped || card.isMatched || forceFlip;
   const hasEntered = entranceDelay >= 0;
 
   return (
@@ -39,7 +41,13 @@ export default function Card({ card, onClick, disabled, isMatchAnimating, entran
           <span className={styles.starIcon}>&#10024;</span>
         </div>
         <div className={styles.cardBack}>
-          <span className={styles.emoji}>{card.emoji}</span>
+          {card.image ? (
+            <img src={card.image} alt={card.label} className={styles.cardImage} />
+          ) : card.color && card.shape ? (
+            <ColorShape shape={card.shape} color={card.color} size={60} />
+          ) : (
+            <span className={styles.emoji}>{card.emoji}</span>
+          )}
           <span className={styles.label} dir="rtl">{card.label}</span>
         </div>
       </div>
