@@ -41,7 +41,9 @@ export default function Card({ card, onClick, disabled, isMatchAnimating, entran
           <span className={styles.starIcon}>&#10024;</span>
         </div>
         <div className={styles.cardBack}>
-          {card.color && card.shape ? (
+          {card.image ? (
+            <img src={card.image} alt={card.label} className={styles.cardImage} />
+          ) : card.color && card.shape ? (
             <ColorShape shape={card.shape} color={card.color} size={60} />
           ) : (
             <span className={styles.emoji}>{card.emoji}</span>

@@ -26,6 +26,7 @@ export function createCards(theme: Theme, difficulty: Difficulty): CardData[] {
       emoji: item.emoji,
       ...(item.color ? { color: item.color } : {}),
       ...(item.shape ? { shape: item.shape } : {}),
+      ...(item.image ? { image: item.image } : {}),
       isFlipped: false,
       isMatched: false,
     };

@@ -4,11 +4,13 @@ export interface ThemeItem {
   emoji: string;
   color?: string;
   shape?: string;
+  image?: string;
 }
 
 export interface Theme {
   id: string;
   name: string;
+  image?: string;
   items: ThemeItem[];
 }
 
@@ -35,6 +37,7 @@ export interface CardData {
   emoji: string;
   color?: string;
   shape?: string;
+  image?: string;
   isFlipped: boolean;
   isMatched: boolean;
 }

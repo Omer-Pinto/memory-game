@@ -130,7 +130,11 @@ export default function SetupScreen({ onStart, defaultPlayer1Name, defaultPlayer
                 onClick={() => setThemeId(theme.id)}
               >
                 <span className={styles.themeEmoji}>
-                  {theme.items.slice(0, 3).map((item) => item.emoji).join("")}
+                  {theme.image ? (
+                    <Image src={theme.image} alt={theme.name} width={120} height={120} style={{ objectFit: "contain", borderRadius: "8px" }} />
+                  ) : (
+                    theme.items.slice(0, 3).map((item) => item.emoji).join("")
+                  )}
                 </span>
                 <span className={styles.themeName}>{theme.name}</span>
               </button>
