@@ -41,8 +41,8 @@
 }
 
 @keyframes cardBreath {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.03); }
+  0%, 100% { scale: 1; }
+  50% { scale: 1.03; }
 }
 
 .cardContainer:hover:not(.flipped):not(.matchedCard) {

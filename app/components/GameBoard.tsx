@@ -9,6 +9,7 @@ import {
   playMismatchSound,
   playComboSound,
   playVictorySound,
+  playFlipSound,
 } from "../game/soundEngine";
 import Card from "./Card";
 import ScoreBoard from "./ScoreBoard";
@@ -167,6 +168,7 @@ export default function GameBoard({ setup, onPlayAgain }: GameBoardProps) {
             setTimeout(() => setMatchCooldown(false), MATCH_COOLDOWN_TIME);
           } else {
             playMismatchSound();
+            playFlipSound();
             setStreak(0);
             const msg = MISMATCH_ENCOURAGEMENTS[Math.floor(Math.random() * MISMATCH_ENCOURAGEMENTS.length)];
             setEncouragement(msg);
@@ -194,6 +196,7 @@ export default function GameBoard({ setup, onPlayAgain }: GameBoardProps) {
       const card = gameState.cards.find((c) => c.id === cardId);
       if (!card || card.isFlipped || card.isMatched) return;
 
+      playFlipSound();
       setGameState((prev) => flipCard(prev, cardId));
     },
     [gameState.isChecking, gameState.isGameOver, gameState.cards]
@@ -265,7 +268,7 @@ export default function GameBoard({ setup, onPlayAgain }: GameBoardProps) {
         )}
         <button
           className={`${styles.revealButton} ${revealAll ? styles.revealButtonActive : ""}`}
-          onClick={() => setRevealAll((v) => !v)}
+          onClick={() => { playFlipSound(); setRevealAll((v) => !v); }}
           title={revealAll ? "\u05D4\u05E1\u05EA\u05E8 \u05D4\u05DB\u05DC" : "\u05D2\u05DC\u05D4 \u05D4\u05DB\u05DC"}
         >
           {revealAll ? "\uD83D\uDE48 \u05D4\u05E1\u05EA\u05E8" : "\uD83D\uDC41\uFE0F \u05D2\u05DC\u05D4 \u05D4\u05DB\u05DC"}

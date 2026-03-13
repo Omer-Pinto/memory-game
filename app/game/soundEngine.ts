@@ -34,3 +34,7 @@ export function playComboSound() {
 export function playVictorySound() {
   playSound("/assets/sounds/victory.mp3", 0.6);
 }
+
+export function playFlipSound() {
+  playSound("/assets/sounds/flip_card.mp3", 0.4);
+}
