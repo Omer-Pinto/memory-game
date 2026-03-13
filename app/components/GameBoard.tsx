@@ -63,8 +63,7 @@ const COMBO_MESSAGES = [
   "\u05D1\u05DC\u05EA\u05D9 \u05E0\u05D9\u05EA\u05DF \u05DC\u05E2\u05E6\u05D9\u05E8\u05D4!",
 ];
 
-// Reduced from 3200ms to 2200ms as requested
-const MISMATCH_VIEWING_TIME = 2200;
+const MISMATCH_VIEWING_TIME = 1000;
 const TURN_ANNOUNCEMENT_TIME = 3000;
 const MATCH_ANIMATION_TIME = 1200;
 const MATCH_COOLDOWN_TIME = 1500;
@@ -96,6 +95,7 @@ export default function GameBoard({ setup, onPlayAgain }: GameBoardProps) {
   const [milestoneMessage, setMilestoneMessage] = useState<string | null>(null);
   const [cardsEntered, setCardsEntered] = useState(false);
   const [screenFlash, setScreenFlash] = useState(false);
+  const [revealAll, setRevealAll] = useState(false);
   const prevPlayerRef = useRef(gameState.currentPlayerIndex);
   const halfwayShownRef = useRef(false);
   const totalPairs = config.pairsNeeded;
@@ -202,7 +202,7 @@ export default function GameBoard({ setup, onPlayAgain }: GameBoardProps) {
 
   const handleCardClick = useCallback(
     (cardId: number) => {
-      if (gameState.isChecking || gameState.isGameOver || matchCooldown) return;
+      if (gameState.isChecking || gameState.isGameOver) return;
       const card = gameState.cards.find((c) => c.id === cardId);
       if (!card || card.isFlipped || card.isMatched) return;
 
@@ -213,7 +213,7 @@ export default function GameBoard({ setup, onPlayAgain }: GameBoardProps) {
 
       setGameState((prev) => flipCard(prev, cardId));
     },
-    [gameState.isChecking, gameState.isGameOver, gameState.cards, matchCooldown]
+    [gameState.isChecking, gameState.isGameOver, gameState.cards]
   );
 
   if (gameState.isGameOver) {
@@ -281,6 +281,13 @@ export default function GameBoard({ setup, onPlayAgain }: GameBoardProps) {
             ))}
           </div>
         )}
+        <button
+          className={`${styles.revealButton} ${revealAll ? styles.revealButtonActive : ""}`}
+          onClick={() => setRevealAll((v) => !v)}
+          title={revealAll ? "\u05D4\u05E1\u05EA\u05E8 \u05D4\u05DB\u05DC" : "\u05D2\u05DC\u05D4 \u05D4\u05DB\u05DC"}
+        >
+          {revealAll ? "\uD83D\uDE48 \u05D4\u05E1\u05EA\u05E8" : "\uD83D\uDC41\uFE0F \u05D2\u05DC\u05D4 \u05D4\u05DB\u05DC"}
+        </button>
       </div>
 
       <PlayerTurnIndicator
@@ -304,9 +311,10 @@ export default function GameBoard({ setup, onPlayAgain }: GameBoardProps) {
             key={card.id}
             card={card}
             onClick={handleCardClick}
-            disabled={gameState.isChecking || matchCooldown}
+            disabled={gameState.isChecking}
             isMatchAnimating={gameState.matchAnimation?.includes(card.id) ?? false}
             entranceDelay={cardsEntered ? index * 30 : -1}
+            forceFlip={revealAll}
           />
         ))}
       </div>

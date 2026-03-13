@@ -24,6 +24,44 @@
 .header {
   text-align: center;
   margin-bottom: 4px;
+  position: relative;
+}
+
+.revealButton {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 50;
+  padding: 6px 16px;
+  border: none;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  color: white;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  box-shadow: 0 3px 12px rgba(102, 126, 234, 0.4);
+  transition: all 0.25s ease;
+  direction: rtl;
+  white-space: nowrap;
+}
+
+.revealButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 18px rgba(102, 126, 234, 0.55);
+}
+
+.revealButton:active {
+  transform: translateY(0);
+}
+
+.revealButtonActive {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  box-shadow: 0 3px 12px rgba(245, 87, 108, 0.4);
+}
+
+.revealButtonActive:hover {
+  box-shadow: 0 5px 18px rgba(245, 87, 108, 0.55);
 }
 
 .themeName {
@@ -129,11 +167,10 @@
   font-size: 2.2rem;
   font-weight: 900;
   color: white;
-  background: linear-gradient(135deg, #FFD93D 0%, #FF6B6B 50%, #FF8E53 100%);
-  box-shadow:
-    0 0 40px rgba(255, 215, 61, 0.7),
-    0 8px 32px rgba(0, 0, 0, 0.2);
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+  background: linear-gradient(135deg, rgba(255, 215, 61, 0.6) 0%, rgba(255, 107, 107, 0.6) 50%, rgba(255, 142, 83, 0.6) 100%);
+  backdrop-filter: blur(4px);
+  box-shadow: none;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
   letter-spacing: 2px;
 }
 
@@ -155,13 +192,11 @@
   font-size: 2.8rem;
   font-weight: 900;
   color: white;
-  background: linear-gradient(135deg, #FF4757 0%, #FF6B6B 25%, #FFD93D 50%, #FF8E53 75%, #FF4757 100%);
+  background: linear-gradient(135deg, rgba(255, 71, 87, 0.6) 0%, rgba(255, 107, 107, 0.6) 25%, rgba(255, 215, 61, 0.6) 50%, rgba(255, 142, 83, 0.6) 75%, rgba(255, 71, 87, 0.6) 100%);
   background-size: 200% 200%;
   animation: comboShimmer 0.5s linear infinite;
-  box-shadow:
-    0 0 50px rgba(255, 71, 87, 0.7),
-    0 0 100px rgba(255, 215, 61, 0.5),
-    0 12px 40px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(4px);
+  box-shadow: none;
   text-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
   letter-spacing: 4px;
 }
@@ -303,13 +338,11 @@
   font-size: 2.6rem;
   font-weight: 900;
   color: white;
-  background: linear-gradient(135deg, #FF6B6B 0%, #FFD93D 25%, #6BCB77 50%, #4D96FF 75%, #9B59B6 100%);
+  background: linear-gradient(135deg, rgba(255, 107, 107, 0.6) 0%, rgba(255, 215, 61, 0.6) 25%, rgba(107, 203, 119, 0.6) 50%, rgba(77, 150, 255, 0.6) 75%, rgba(155, 89, 182, 0.6) 100%);
   background-size: 300% 300%;
   animation: milestoneShimmer 0.8s linear infinite;
-  box-shadow:
-    0 0 60px rgba(255, 107, 107, 0.7),
-    0 0 120px rgba(255, 215, 61, 0.5),
-    0 16px 48px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(4px);
+  box-shadow: none;
   text-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
   letter-spacing: 4px;
 }

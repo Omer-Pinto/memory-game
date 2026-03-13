@@ -7,6 +7,8 @@ import styles from "./SetupScreen.module.css";
 
 interface SetupScreenProps {
   onStart: (setup: GameSetup) => void;
+  defaultPlayer1Name?: string;
+  defaultPlayer2Name?: string;
 }
 
 const DIFFICULTIES: { key: Difficulty; label: string; desc: string; icon: string }[] = [
@@ -15,9 +17,9 @@ const DIFFICULTIES: { key: Difficulty; label: string; desc: string; icon: string
   { key: "hard", label: "\u05E7\u05E9\u05D4", desc: "8 x 8", icon: "\u26A1" },
 ];
 
-export default function SetupScreen({ onStart }: SetupScreenProps) {
-  const [player1Name, setPlayer1Name] = useState("");
-  const [player2Name, setPlayer2Name] = useState("");
+export default function SetupScreen({ onStart, defaultPlayer1Name, defaultPlayer2Name }: SetupScreenProps) {
+  const [player1Name, setPlayer1Name] = useState(defaultPlayer1Name || "");
+  const [player2Name, setPlayer2Name] = useState(defaultPlayer2Name || "");
   const [themeId, setThemeId] = useState(themes[0].id);
   const [difficulty, setDifficulty] = useState<Difficulty>("easy");
 

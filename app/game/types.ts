@@ -2,6 +2,8 @@ export interface ThemeItem {
   id: string;
   label: string;
   emoji: string;
+  color?: string;
+  shape?: string;
 }
 
 export interface Theme {
@@ -31,6 +33,8 @@ export interface CardData {
   themeItemId: string;
   label: string;
   emoji: string;
+  color?: string;
+  shape?: string;
   isFlipped: boolean;
   isMatched: boolean;
 }
