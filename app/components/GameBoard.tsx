@@ -5,18 +5,8 @@ import { GameSetup, GameState, DIFFICULTY_CONFIG } from "../game/types";
 import { checkMatch, createCards, createInitialState, flipCard } from "../game/gameEngine";
 import { themes } from "../themes";
 import {
-  playCardSound,
-  playComboSound,
-  playFlipSound,
   playMatchSound,
   playMismatchSound,
-  preloadSounds,
-  speakEncouragement,
-  speakTurn,
-  startBackgroundMusic,
-  stopBackgroundMusic,
-  vibrateMatch,
-  vibrateMismatch,
 } from "../game/soundEngine";
 import Card from "./Card";
 import ScoreBoard from "./ScoreBoard";
@@ -104,20 +94,16 @@ export default function GameBoard({ setup, onPlayAgain }: GameBoardProps) {
   useEffect(() => {
     const timers: ReturnType<typeof setTimeout>[] = [];
     timers.push(setTimeout(() => setCardsEntered(true), 100));
-    preloadSounds();
-    startBackgroundMusic();
 
     // Announce first player's turn after cards enter
     timers.push(setTimeout(() => {
       const firstName = setup.player1Name.trim() || "\u05E9\u05D7\u05E7\u05DF 1";
       setTurnAnnouncement(`${firstName}, \u05D4\u05EA\u05D5\u05E8 \u05E9\u05DC\u05DA!`);
-      speakTurn(firstName);
       setTimeout(() => setTurnAnnouncement(null), TURN_ANNOUNCEMENT_TIME);
     }, 800));
 
     return () => {
       timers.forEach(clearTimeout);
-      stopBackgroundMusic();
     };
   }, [setup.difficulty, setup.player1Name]);
 
@@ -125,7 +111,6 @@ export default function GameBoard({ setup, onPlayAgain }: GameBoardProps) {
     if (prevPlayerRef.current !== gameState.currentPlayerIndex) {
       const name = gameState.players[gameState.currentPlayerIndex].name;
       setTurnAnnouncement(`${name}, \u05D4\u05EA\u05D5\u05E8 \u05E9\u05DC\u05DA!`);
-      speakTurn(name);
       const timer = setTimeout(() => setTurnAnnouncement(null), TURN_ANNOUNCEMENT_TIME);
       prevPlayerRef.current = gameState.currentPlayerIndex;
       return () => clearTimeout(timer);
@@ -142,14 +127,14 @@ export default function GameBoard({ setup, onPlayAgain }: GameBoardProps) {
             setStreak(newStreak);
             setTotalStars((s) => s + 1);
 
+            playMatchSound();
+
             if (newStreak >= 2) {
-              playComboSound(newStreak);
               const comboIdx = Math.min(newStreak, COMBO_MESSAGES.length - 1);
               setComboMessage(COMBO_MESSAGES[comboIdx]);
               setConfettiCount(40 + newStreak * 20);
               setTimeout(() => setComboMessage(null), 2000);
             } else {
-              playMatchSound();
               setConfettiCount(40);
             }
 
@@ -171,14 +156,11 @@ export default function GameBoard({ setup, onPlayAgain }: GameBoardProps) {
             setMatchCooldown(true);
             const msg = ENCOURAGEMENTS[Math.floor(Math.random() * ENCOURAGEMENTS.length)];
             setEncouragement(msg);
-            speakEncouragement(msg);
-            vibrateMatch();
             setTimeout(() => setShowConfetti(false), 2500);
             setTimeout(() => setEncouragement(null), 2000);
             setTimeout(() => setMatchCooldown(false), MATCH_COOLDOWN_TIME);
           } else {
             playMismatchSound();
-            vibrateMismatch();
             setStreak(0);
             const msg = MISMATCH_ENCOURAGEMENTS[Math.floor(Math.random() * MISMATCH_ENCOURAGEMENTS.length)];
             setEncouragement(msg);
@@ -206,18 +188,12 @@ export default function GameBoard({ setup, onPlayAgain }: GameBoardProps) {
       const card = gameState.cards.find((c) => c.id === cardId);
       if (!card || card.isFlipped || card.isMatched) return;
 
-      playFlipSound();
-      setTimeout(() => {
-        playCardSound(card.themeItemId, card.label);
-      }, 200);
-
       setGameState((prev) => flipCard(prev, cardId));
     },
     [gameState.isChecking, gameState.isGameOver, gameState.cards]
   );
 
   if (gameState.isGameOver) {
-    stopBackgroundMusic();
     return (
       <GameOverScreen
         players={gameState.players}
@@ -293,6 +269,7 @@ export default function GameBoard({ setup, onPlayAgain }: GameBoardProps) {
       <PlayerTurnIndicator
         players={gameState.players}
         currentPlayerIndex={gameState.currentPlayerIndex}
+        icons={[setup.player1Icon, setup.player2Icon]}
       />
 
       <ScoreBoard players={gameState.players} totalPairs={totalPairs} />

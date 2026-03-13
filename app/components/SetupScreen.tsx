@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Difficulty, GameSetup } from "../game/types";
+import Image from "next/image";
+import { Difficulty, GameSetup, PLAYER_ICONS, PlayerIcon } from "../game/types";
 import { themes } from "../themes";
 import styles from "./SetupScreen.module.css";
 
@@ -9,6 +10,15 @@ interface SetupScreenProps {
   onStart: (setup: GameSetup) => void;
   defaultPlayer1Name?: string;
   defaultPlayer2Name?: string;
+  defaultPlayer1Icon?: string;
+  defaultPlayer2Icon?: string;
+}
+
+function IconContent({ icon }: { icon: PlayerIcon }) {
+  if (icon.image) {
+    return <Image src={icon.image} alt={icon.label} width={44} height={44} style={{ objectFit: "contain", borderRadius: "50%" }} />;
+  }
+  return <>{icon.emoji}</>;
 }
 
 const DIFFICULTIES: { key: Difficulty; label: string; desc: string; icon: string }[] = [
@@ -17,9 +27,11 @@ const DIFFICULTIES: { key: Difficulty; label: string; desc: string; icon: string
   { key: "hard", label: "\u05E7\u05E9\u05D4", desc: "8 x 8", icon: "\u26A1" },
 ];
 
-export default function SetupScreen({ onStart, defaultPlayer1Name, defaultPlayer2Name }: SetupScreenProps) {
+export default function SetupScreen({ onStart, defaultPlayer1Name, defaultPlayer2Name, defaultPlayer1Icon, defaultPlayer2Icon }: SetupScreenProps) {
   const [player1Name, setPlayer1Name] = useState(defaultPlayer1Name || "");
   const [player2Name, setPlayer2Name] = useState(defaultPlayer2Name || "");
+  const [player1Icon, setPlayer1Icon] = useState(defaultPlayer1Icon || PLAYER_ICONS[0].emoji);
+  const [player2Icon, setPlayer2Icon] = useState(defaultPlayer2Icon || PLAYER_ICONS[1].emoji);
   const [themeId, setThemeId] = useState(themes[0].id);
   const [difficulty, setDifficulty] = useState<Difficulty>("easy");
 
@@ -28,6 +40,8 @@ export default function SetupScreen({ onStart, defaultPlayer1Name, defaultPlayer
     onStart({
       player1Name: player1Name.trim() || "\u05E9\u05D7\u05E7\u05DF 1",
       player2Name: player2Name.trim() || "\u05E9\u05D7\u05E7\u05DF 2",
+      player1Icon,
+      player2Icon,
       themeId,
       difficulty,
     });
@@ -53,7 +67,20 @@ export default function SetupScreen({ onStart, defaultPlayer1Name, defaultPlayer
       <form onSubmit={handleSubmit} className={styles.form}>
         <div className={styles.playersRow}>
           <div className={styles.playerField}>
-            <div className={styles.playerIcon}>&#129409;</div>
+            <div className={styles.iconPicker}>
+              {PLAYER_ICONS.map((icon) => (
+                <button
+                  key={icon.emoji}
+                  type="button"
+                  data-label={icon.label}
+                  className={`${styles.iconOption} ${icon.image ? styles.iconOptionImage : ""} ${player1Icon === icon.emoji ? styles.iconSelected : ""} ${player2Icon === icon.emoji ? styles.iconTaken : ""}`}
+                  onClick={() => { if (player2Icon !== icon.emoji) setPlayer1Icon(icon.emoji); }}
+                  disabled={player2Icon === icon.emoji}
+                >
+                  <IconContent icon={icon} />
+                </button>
+              ))}
+            </div>
             <input
               className={styles.input}
               type="text"
@@ -66,7 +93,20 @@ export default function SetupScreen({ onStart, defaultPlayer1Name, defaultPlayer
           </div>
           <span className={styles.vs}>{"\u05E0\u05D2\u05D3"}</span>
           <div className={styles.playerField}>
-            <div className={styles.playerIcon}>&#129412;</div>
+            <div className={styles.iconPicker}>
+              {PLAYER_ICONS.map((icon) => (
+                <button
+                  key={icon.emoji}
+                  type="button"
+                  data-label={icon.label}
+                  className={`${styles.iconOption} ${icon.image ? styles.iconOptionImage : ""} ${player2Icon === icon.emoji ? styles.iconSelected : ""} ${player1Icon === icon.emoji ? styles.iconTaken : ""}`}
+                  onClick={() => { if (player1Icon !== icon.emoji) setPlayer2Icon(icon.emoji); }}
+                  disabled={player1Icon === icon.emoji}
+                >
+                  <IconContent icon={icon} />
+                </button>
+              ))}
+            </div>
             <input
               className={styles.input}
               type="text"
